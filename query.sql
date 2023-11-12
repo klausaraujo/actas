@@ -2001,14 +2001,10 @@ CREATE TABLE modulo_rol  (
 	/*Administrador*/
 	INSERT INTO modulo_rol(idmodulorol,idmodulo,idperfil,activo) VALUES(1,1,1,'1');
 	INSERT INTO modulo_rol(idmodulorol,idmodulo,idperfil,activo) VALUES(2,2,1,'1');
-	INSERT INTO modulo_rol(idmodulorol,idmodulo,idperfil,activo) VALUES(3,3,1,'1');
-	INSERT INTO modulo_rol(idmodulorol,idmodulo,idperfil,activo) VALUES(4,4,1,'1');
 		
 	/*Estandar*/
 	INSERT INTO modulo_rol(idmodulorol,idmodulo,idperfil,activo) VALUES(5,1,2,'0');
 	INSERT INTO modulo_rol(idmodulorol,idmodulo,idperfil,activo) VALUES(6,2,2,'1');
-	INSERT INTO modulo_rol(idmodulorol,idmodulo,idperfil,activo) VALUES(7,3,2,'1');
-	INSERT INTO modulo_rol(idmodulorol,idmodulo,idperfil,activo) VALUES(8,4,2,'1');
 
 CREATE TABLE permiso  (
   idpermiso smallint(4) NOT NULL AUTO_INCREMENT,
