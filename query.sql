@@ -1988,10 +1988,8 @@ CREATE TABLE modulo  (
   PRIMARY KEY (idmodulo)) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci;
   
 	INSERT INTO modulo (idmodulo,descripcion,menu,icono,url,imagen,mini,orden) VALUES (1,'Módulo de Registro de Usuarios y Accesos Personalizados','Módulo Usuarios','usuarios.png','usuarios','1','fa fa-users',1);
-	INSERT INTO modulo (idmodulo,descripcion,menu,icono,url,imagen,mini,orden) VALUES (2,'Módulo de Registro de Convocatorias para Contratación de Locadores de Servicio','Módulo Locadores','locadores.png','locadores','1','fa fa-id-card',2);
-	INSERT INTO modulo (idmodulo,descripcion,menu,icono,url,imagen,mini,orden) VALUES (3,'Módulo de Registro de Convocatorias para Adquisición de Bienes','Módulo Bienes','bienes.png','bienes','1','fa fa-ambulance',3);
-	INSERT INTO modulo (idmodulo,descripcion,menu,icono,url,imagen,mini,orden) VALUES (4,'Módulo de Registro de Convocatorias para Contratación de Servicios','Módulo Servicios','servicios.png','servicios','1','fa fa-list-alt',4);
-	
+	INSERT INTO modulo (idmodulo,descripcion,menu,icono,url,imagen,mini,orden) VALUES (2,'Módulo de Registro y Seguimiento de Actas y Acuerdos','Módulo Actas','actas.png','actas','1','fa fa-id-card',2);
+		
 CREATE TABLE modulo_rol  (	
 	idmodulorol smallint(4) NOT NULL AUTO_INCREMENT,
 	idmodulo smallint(4) NOT NULL,
@@ -2112,6 +2110,7 @@ CREATE TABLE permisos_opcion  (
 CREATE TABLE acta (
   idacta smallint(4) NOT NULL AUTO_INCREMENT,
   anio smallint(4) NOT NULL,
+  correlativo smallint(4) NOT NULL,
   descripcion varchar(500),
   fecha datetime,
   idusuario_creacion smallint(4),
@@ -2131,8 +2130,9 @@ CREATE TABLE acta (
   responsables varchar(500),
   fecha_inicial datetime,
   fecha_final datetime,
-  tolerancia smallint(4),
+  fecha_iniciacion datetime,
   check_inicio char(1) DEFAULT '0',
+  fecha_finalizacion datetime,
   check_final char(1) DEFAULT '0',
   activo char(1) DEFAULT '1',
   PRIMARY KEY (idacuerdo),
