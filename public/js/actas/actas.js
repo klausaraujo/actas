@@ -1,10 +1,14 @@
-let tablaLocadores = null, tablaEval = null;
+let tablaActas = null, tablaEval = null;
 
 $(document).ready(function (){
 	if(segmento2 == ''){
-		tablaLocadores = $('#tablaLocadores').DataTable({
+		tablaActas = $('#tablaActas').DataTable({
 			ajax: {
-				url: base_url + 'locadores/lista',
+				url: base_url + 'actas/lista',
+				type: 'post',
+				data: function(d){
+					d.anio = $('#anio').val()
+				}
 			},
 			bAutoWidth:false, bDestroy:true, responsive:true, select:false, lengthMenu:[[10, 25, 50, 100, -1], [10, 25, 50, 100, 'Todas']], language: lngDataTable,
 			columns:[
@@ -12,28 +16,39 @@ $(document).ready(function (){
 					data: null,
 					orderable: false,
 					render: function(data){
-						let hrefEdit = (data.activo === '1' && btnEdit && data.idestado==='1')?'href="'+base_url+'locadores/editar?id='+data.idconvocatoria+'"':'';
-						let hrefCan = (data.activo === '1' && btnCan && data.idestado==='1')?'href="'+base_url+'locadores/cancelar?id='+data.idconvocatoria+'"':'';
-						let hrefEval = (data.activo === '1' && btnEval && parseInt(data.idestado) < 3 && 
+						let hrefEdit = (data.activo === '1' && btnEdit)?'href="'+base_url+'actas/editar?id='+data.idacta+'"':'';
+						let hrefAnular = (data.activo === '1' && btnAnular && data.activo === '1')?'href="'+base_url+'actas/anular?id='+data.idacta+'"':'';
+						/*let hrefEval = (data.activo === '1' && btnEval && parseInt(data.idestado) < 3 && 
 							data.calificado === '0' && data.idestado === '2')?'href="'+base_url+'locadores/evaluar?id='+data.idconvocatoria+'"':'';
 						let hrefPub = (data.activo === '1' && btnPub && parseInt(data.idestado) < 3 && parseInt(data.calificado))?
-								'href="'+base_url+'locadores/ver?id='+data.idconvocatoria+'"':'';
+								'href="'+base_url+'locadores/ver?id='+data.idconvocatoria+'"':'';*/
 						let btnAccion =
 							'<div class="btn-group">'+
-								'<a '+(hrefEdit?'title="Editar Convocatoria" '+hrefEdit:'')+' class="bg-info btnTable">'+
+								'<a '+(hrefEdit?'title="Editar Acta" '+hrefEdit:'')+' class="bg-info btnTable">'+
 									'<img src="'+base_url+'public/images/edit_ico.png" width="22"></a>'+
-								'<a '+(hrefCan?'title="Cancelar Convocatoria" '+hrefCan:'')+' class="bg-danger btnTable '+(hrefCan?'cancelar':'')+'">'+
+								'<a '+(hrefAnular?'title="Anular Acta" '+hrefAnular:'')+' class="bg-danger btnTable '+(hrefAnular?'anular':'')+'">'+
 									'<img src="'+base_url+'public/images/cancel_ico.png" width="22"></a>'+
-								'<a '+(hrefEval?'title="Evaluar Postulantes" '+hrefEval:'')+' class="bg-warning btnTable px-1">'+
+								/*'<a '+(hrefEval?'title="Evaluar Postulantes" '+hrefEval:'')+' class="bg-warning btnTable px-1">'+
 									'<img src="'+base_url+'public/images/evaluar_ico.png" width="15"></a>'+
 								'<a '+(hrefPub?'title="Publicar Resultados" '+hrefPub:'')+' class="bg-light btnTable border border-secondary" target="_blank">'+
-									'<img src="'+base_url+'public/images/result_ico.png" width="18"></a>'+
+									'<img src="'+base_url+'public/images/result_ico.png" width="18"></a>'+*/
 							'</div>';
 						return btnAccion;
 					}
 				},
-				{ data: 'idconvocatoria' },{ data: 'dependencia' },{ data: 'denominacion' },{ data: 'estadodesc' },
-				{ data: 'fi', render: function(data,type,row,meta){ return data+'<br><span style="color:#0000FF;font-weight:bold">'+row.hinicio+'</span>'; } },
+				{ data: 'anio' },{ data: 'cor' },{ data: 'fecha' },{ data: 'descripcion' },
+				{
+					data: 'activo',
+					render: function(data){
+						let var_status = '';
+						switch(data){
+							case '1': var_status = '<span class="text-success">Activo</span>'; break;
+							case '0': var_status = '<span class="text-danger">Inactivo</span>'; break;
+						}
+						return var_status;
+					}
+				},
+				/*{ data: 'fi', render: function(data,type,row,meta){ return data+'<br><span style="color:#0000FF;font-weight:bold">'+row.hinicio+'</span>'; } },
 				{ data: 'ff', render: function(data,type,row,meta){ return data+'<br><span style="color:#0000FF;font-weight:bold">'+row.hfin+'</span>'; } },
 				{
 					data: 'archivo_base',
@@ -56,7 +71,7 @@ $(document).ready(function (){
 						}
 						return img;
 					}
-				},{ data: 'fecha_registro' },
+				},{ data: 'fecha_registro' },*/
 			],
 			columnDefs:headers, order: [],
 		});
@@ -166,6 +181,13 @@ $(document).ready(function (){
 		});
 	}
 });
+
+$('#anio').bind('change', function(){
+	tablaActas.ajax.reload();
+});
+
+
+/*
 $('.atach').bind('change', function(){
 	let file = this.files[0], arr = (this.files[0]!==undefined?file.name.split('.'):[]), ext = $(arr).get(-1);
 	
@@ -189,31 +211,53 @@ $('.atach').bind('change', function(){
 			$('#file2').val(''), $('.anexo').html('');
 		}
 	}
-});
+});*/
 $('.form').validate({
 	errorClass: 'form_error',
 	validClass: 'success',
 	rules: { 
-		finicio: { required: function () { if ($('#finicio').css('display') != 'none') return true; else return false; } },
+		descripcion: { required: function () { if ($('#descripcion').css('display') != 'none') return true; else return false; } },
 	},
 	messages: {
-		finicio: { required: '' },
+		descripcion: { required: 'Campo requerido' },
 	},
-	errorPlacement: function(error, element){},
+	errorPlacement: function(error, element){
+		error.insertAfter(element);
+	},
 	submitHandler: function (form, event){
-		if($('#file1').val() !== '' && $('#file2').val() !== ''){
-			let boton = $('#btnEnviar');
-			$(boton).html('<span class="spinner-border spinner-border-sm"></span>&nbsp;&nbsp;Cargando...');
-			$(boton).addClass('disabled'); $('.btn-cancelar').addClass('disabled');
-			return true;
-		}else{
-			event.preventDefault();
-			if($('#file1').val() === '') $('.sptdr').html('<span class="text-danger">Debe cargar un archivo</span>');
-			if($('#file2').val() === '') $('.spanexo').html('<span class="text-danger">Debe cargar un archivo</span>');
-		}
+		$(boton).html('<span class="spinner-border spinner-border-sm"></span>&nbsp;&nbsp;Cargando...');
+		$(boton).addClass('disabled'); $('.btn-cancelar').addClass('disabled');
+		return true;
 	}
 });
 
+$('#tablaActas').bind('click','a',function(e){
+	let el = e.target, a = $(el).closest('a'), mensaje = '';
+	let data = tablaActas.row(a).child.isShown()? tablaActas.row(a).data() : tablaActas.row($(el).parents('tr')).data();
+	if($(a).hasClass('anular')){
+		e.preventDefault();
+		mensaje = 'Seguro que desea Anular el Acta?';
+		let confirmacion = confirm(mensaje);
+		if(confirmacion){
+			$.ajax({
+				data: {},
+				url: $(a).attr('href'),
+				method: 'GET',
+				dataType: 'JSON',
+				error: function(xhr){},
+				beforeSend: function(){},
+				success: function(data){
+					if(parseInt(data.status) === 200){
+						tablaActas.ajax.reload();
+					}
+					$('.resp').html(data.msg);
+					setTimeout(function () { $('.resp').html(''); }, 2500);
+				}
+			});
+		}
+	}
+});
+/*
 function formatoFecha(fecha, formato) {
 	let m = (fecha.getMonth()+1).toString();
 	m = m.length < 2? '0'+m : m;
@@ -309,4 +353,4 @@ $('#evaluar').bind('click',function(e){
 	});
 	$(location).attr('href',base_url+segmento+'/evaluado?json='+JSON.stringify(data));
 	//console.log(JSON.stringify(data));
-});
+});*/

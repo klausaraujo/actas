@@ -59,9 +59,9 @@ $route['logout'] = 'login/logout';
 
 /* Programacion en general */
 $route['usuarios'] = 'main/usuarios';
-$route['locadores'] = 'main/locadores';
-$route['main/curl'] = 'main/curl';
-$route['main/ruccurl'] = 'main/ruccurl';
+$route['actas'] = 'main/actas';
+/*$route['main/curl'] = 'main/curl';
+$route['main/ruccurl'] = 'main/ruccurl';*/
 $route['main/upload'] = 'main/upload';
 /* Cambiar perfil del usuario */
 $route['main/perfil'] = 'main/perfil';
@@ -89,6 +89,14 @@ $route['locadores/descargarp'] = 'locadores/main/descargarp';
 $route['locadores/evaluar'] = 'locadores/main/evaluar';
 $route['locadores/evaluado'] = 'locadores/main/evaluado';
 $route['locadores/ver'] = 'locadores/main/ver';
+
+/* Actas */
+$route['actas/lista'] = 'actas/main/listaActas';
+$route['nuevaacta'] = 'actas/main/nueva';
+$route['actas/nueva'] = 'actas/main/nueva';
+$route['actas/registrar'] = 'actas/main/registrar';
+$route['actas/editar'] = 'actas/main/nueva';
+$route['actas/anular'] = 'actas/main/anular';
 
 /**/
 $route['404_override'] = '';

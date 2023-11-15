@@ -1,25 +1,36 @@
 <?php
 if (! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Locadores_model extends CI_Model
+class Actas_model extends CI_Model
 {    
 	public function __construct(){ parent::__construct(); }
     
-	public function listaLocadores()
+	public function listaActas($where)
     {
-        $this->db->select('lc.*,DATE_FORMAT(fecha_inicio,"%d/%m/%Y") as fi,DATE_FORMAT(fecha_fin,"%d/%m/%Y") as ff,
-			DATE_FORMAT(fecha_registro,"%d/%m/%Y") as fecha_registro,d.descripcion as dependencia,e.descripcion estadodesc,
-			DATE_FORMAT(fecha_inicio,"%l:%i %p") as hinicio,DATE_FORMAT(fecha_fin,"%l:%i %p") as hfin');
-        $this->db->from('convocatoria_locadores lc');
-		$this->db->join('dependencia d','d.iddependencia = lc.iddependencia');
-		$this->db->join('estado e','e.idestado = lc.idestado');
-		$this->db->order_by('lc.fecha_registro', 'desc');
+        $this->db->select('a.*,LPAD(a.correlativo,5,0) as cor,DATE_FORMAT(a.fecha,"%d/%m/%Y") as fecha');
+        $this->db->from('acta a');
+		$this->db->where($where);
+		$this->db->order_by('a.correlativo', 'desc');
         $result = $this->db->get();
 		return ($result->num_rows() > 0)? $result->result() : array();
     }
-	public function validaLista($where)
+	public function listaActa($where)
+    {
+        $this->db->select('a.*,DATE_FORMAT(a.fecha,"%Y-%m-%d") as fecha');
+        $this->db->from('acta a');
+		$this->db->where($where);
+		$this->db->order_by('a.correlativo', 'desc');
+        $result = $this->db->get();
+		return ($result->num_rows() > 0)? $result->row() : array();
+    }
+	public function anio($where)
 	{
-		return $this->db->where($where)->from('convocatoria_locadores_postulantes')->count_all_results();
+		$rs = $this->db->where($where)->from('anio')->get();
+		return $rs->num_rows() > 0? $rs->result() : array();
+	}
+	public function correlativo($where)
+	{
+		return $this->db->where($where)->from('acta')->count_all_results();
 	}
 	public function actualizar($data,$where,$tabla)
 	{
@@ -65,7 +76,7 @@ class Locadores_model extends CI_Model
 	}
 	public function registrar($data)
 	{
-		if($this->db->insert('convocatoria_locadores', $data))return true;
+		if($this->db->insert('acta', $data))return true;
         //else return $error['code'];
 		else return false;
 	}

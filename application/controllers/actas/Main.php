@@ -15,9 +15,12 @@ class Main extends CI_Controller
 
     public function index(){}
 	
-	public function listaLocadores()
+	public function listaActas()
 	{
-		$this->load->model('Locadores_model');
+		$this->load->model('Actas_model');
+		$anio = $this->input->post('anio');
+		$actas = $this->Actas_model->listaActas(['anio' => $anio, 'activo' => 1]);
+		/*$this->load->model('Locadores_model');
 		$locadores = $this->Locadores_model->listaLocadores(); $hoy = time();
 		foreach($locadores as $row):
 			if((strtotime($row->fecha_fin) - $hoy) < 0){
@@ -36,108 +39,86 @@ class Main extends CI_Controller
 					);
 			}
 		endforeach;
-		$listaactualizada = $this->Locadores_model->listaLocadores();
+		$listaactualizada = $this->Locadores_model->listaLocadores();*/
 		
-		echo json_encode(['data' => $listaactualizada]);
+		echo json_encode(['data' => $actas]);
 	}
 	public function nueva()
 	{
-		if($this->uri->segment(1) === 'nuevaconvocatoria')header('location:' .base_url(). 'locadores/nueva');
+		if($this->uri->segment(1) === 'nuevaacta')header('location:' .base_url(). 'actas/nueva');
 		else{
-			$this->load->model('Locadores_model');
-			$convocatoria = array();
-			$dependencia = $this->Locadores_model->dependencia(['activo' => 1]);
-			$estado = $this->Locadores_model->estado(['activo' => 1]);
+			$this->load->model('Actas_model');
+			$acta = array();
+			$anio = $this->Actas_model->anio(['activo' => 1]);
 			
 			if($this->uri->segment(2) === 'editar'){
 				$id = $this->input->get('id');
-				$convocatoria = $this->Locadores_model->listaConvocatoria(['idconvocatoria' => $id]);
+				$acta = $this->Actas_model->listaActa(['idacta' => $id]);
 			}
 			$data = array(
-				'dependencia' => $dependencia,
-				'estado' => $estado,
-				'convocatoria' => $convocatoria,
+				'acta' => $acta,
+				'anio' => $anio,
 			);
 			$this->load->view('main',$data);
 		}
 	}
 	public function registrar()
 	{
-		$this->load->model('Locadores_model');
-		$this->session->set_flashdata('claseMsg', 'alert-danger'); $nombre = ''; $nombre1 = ''; $guardado = false; $data = [];
-		$itiempo = date_format(date_create($this->input->post('finicio')),'Y-m-d H:i');
-		$ftiempo = date_format(date_create($this->input->post('ffin')),'Y-m-d H:i');
+		$this->load->model('Actas_model');
+		$this->session->set_flashdata('claseMsg', 'alert-danger');
+		$anio = date_format(date_create($this->input->post('fecha')),'Y');
 		
-		if($this->input->post('file1ant') === $this->input->post('file1') && $this->input->post('tiporegistro') === 'editar'){
-			$nombre = $this->input->post('file1ant');
-		}
-		if($this->input->post('file2ant') === $this->input->post('file2') && $this->input->post('tiporegistro') === 'editar'){
-			$nombre1 = $this->input->post('file2ant');
-		}
-		
-		if($nombre === ''){
-			$data = $this->cargaanexo($_FILES['customfile'],0,'customfile');
-			if($data['status'] === 200) $nombre = $data['nombre'];
-			else{
-				$this->session->set_flashdata('errorImage', 'Archivos adjuntos no v&aacute;lidos');
-				$this->session->set_flashdata('claseImg', 'alert-danger');
-				if($this->input->post('tiporegistro') === 'editar') header('location:'.base_url().'locadores/editar?id='.$this->input->post('idconvocatoria'));
-				elseif($this->input->post('tiporegistro') === 'registrar') header('location:'.base_url().'locadores/nueva');
-			}
-		}
-		if($nombre1 === ''){
-			$data = $this->cargaanexo($_FILES['customfile1'],1,'customfile1');
-			if($data['status'] === 200) $nombre1 = $data['nombre'];
-			else{
-				$this->session->set_flashdata('errorImage', 'Archivos adjuntos no v&aacute;lidos');
-				$this->session->set_flashdata('claseImg', 'alert-danger');
-				if($this->input->post('tiporegistro') === 'editar') header('location:'.base_url().'locadores/editar?id='.$this->input->post('idconvocatoria'));
-				elseif($this->input->post('tiporegistro') === 'registrar') header('location:'.base_url().'locadores/nueva');
-			}
-		}
+		$data = array(
+			'anio' => $anio,
+			'descripcion' => $this->input->post('descripcion'),
+			'fecha' => $this->input->post('fecha'),
+		);
 		
 		if($this->input->post('tiporegistro') === 'registrar'){
-			$this->session->set_flashdata('flashMessage', 'No se pudo registrar la <b>Convocatoria</b>');
-			$data = array(
-				'iddependencia' => $this->input->post('dependencia'),
-				'denominacion' => $this->input->post('denominacion'),
-				'idestado' => 1,
-				'fecha_inicio' => $itiempo,
-				'fecha_fin' => $ftiempo,
-				'monto' => $this->input->post('monto'),
-				'archivo_base' => $nombre,
-				'archivo_anexos' => $nombre1,
-				'idusuario_registro' => $this->usuario->idusuario,
-				'fecha_registro' => date('Y-m-d H:i:s'),
-				'activo' => 1,
-			);
-			if($this->Locadores_model->registrar($data)){
-				$this->session->set_flashdata('flashMessage', '<b>Convocatoria</b> Registrada');
+			$this->session->set_flashdata('flashMessage', 'No se pudo registrar el <b>Acta</b>');
+			$correlativo = $this->Actas_model->correlativo(['anio' => $anio]);
+			$data['correlativo'] = $correlativo + 1;
+			$data['idusuario_creacion'] = $this->usuario->idusuario;
+			$data['fecha_creacion'] = date('Y-m-d H:i:s');
+			$data['activo'] = 1;
+			if($this->Actas_model->registrar($data)){
+				$this->session->set_flashdata('flashMessage', '<b>Acta</b> Registrada');
 				$this->session->set_flashdata('claseMsg', 'alert-primary');
 			}
 		}elseif($this->input->post('tiporegistro') === 'editar'){
-			$id = $this->input->post('idconvocatoria');
-			$this->session->set_flashdata('flashMessage', 'No se pudo actualizar la <b>Convocatoria</b>');
+			$id = $this->input->post('idacta');
+			$this->session->set_flashdata('flashMessage', 'No se pudo actualizar el <b>Acta</b>');
 			
-			$data = array(
-				'iddependencia' => $this->input->post('dependencia'),
-				'denominacion' => $this->input->post('denominacion'),
-				'idestado' => $this->input->post('idestado'),
-				'fecha_inicio' => $itiempo,
-				'fecha_fin' => $ftiempo,
-				'monto' => $this->input->post('monto'),
-				'archivo_base' => $nombre,
-				'archivo_anexos' => $nombre1,
-				'idusuario_modificacion' => $this->usuario->idusuario,
-				'fecha_modificacion' => date('Y-m-d H:i:s'),
-			);
+			$data['idusuario_edicion'] = $this->usuario->idusuario;
+			$data['fecha_edicion'] = date('Y-m-d H:i:s');
 			
-			if($this->Locadores_model->actualizar($data, ['idconvocatoria'=>$id], 'convocatoria_locadores')){
-				$this->session->set_flashdata('flashMessage', '<b>Convocatoria</b> Actualizada');
+			if($this->Actas_model->actualizar($data, ['idacta' => $id], 'acta')){
+				$this->session->set_flashdata('flashMessage', '<b>Acta</b> Actualizada');
 				$this->session->set_flashdata('claseMsg', 'alert-primary');
 			}
 		}
-		header('location:'.base_url().'locadores');
+		header('location:'.base_url().'actas');
+	}
+	public function anular()
+	{
+		$this->load->model('Actas_model');
+		$id = $this->input->get('id'); $msg = 'No se pudo Anular el Acta'; $status = 500;
+		
+		if($this->Actas_model->actualizar(
+			['activo' => 0,'idusuario_anulacion' => $this->usuario->idusuario,'fecha_anulacion' => date('Y-m-d H:i')],
+			['idacta' => $id],
+			'acta'
+		)){
+			$status = 200;
+			$msg = 'Acta Anulada';
+		}
+		
+		$data = array(
+			'status' => $status,
+			'msg' => $msg
+		);
+		
+		echo json_encode($data);
 	}
 	public function cargaanexo($file,$i,$n)
 	{
@@ -225,27 +206,6 @@ class Main extends CI_Controller
 			readfile($path.$filen);
 			exit();
 		}
-	}
-	public function cancelar()
-	{
-		$this->load->model('Locadores_model');
-		$id = $this->input->get('id'); $msg = 'No se pudo Cancelar la convocatoria'; $status = 500;
-		
-		if($this->Locadores_model->actualizar(
-			['idestado' => 3,'idusuario_modificacion' => $this->usuario->idusuario,'fecha_modificacion' => date('Y-m-d H:i')],
-			['idconvocatoria' => $id],
-			'convocatoria_locadores'
-		)){
-			$status = 200;
-			$msg = 'Convocatoria cancelada';
-		}
-		
-		$data = array(
-			'status' => $status,
-			'msg' => $msg
-		);
-		
-		echo json_encode($data);
 	}
 	public function evaluar()
 	{

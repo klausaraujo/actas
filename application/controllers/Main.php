@@ -56,27 +56,28 @@ class Main extends CI_Controller
 		);
 		$this->load->view('main',$data);
 	}
-	public function locadores()
+	public function actas()
 	{
-		$this->load->model('Locadores_model');
+		$this->load->model('Actas_model');
 		$this->load->model('Usuarios_model');
+		$idmodulo = ''; $anio = null;
 		foreach($this->usuario->modulos as $valor):
 			if($valor->url === $this->uri->segment(1)){
 				$idmodulo = $valor->idmodulo; break;
 			}
 		endforeach;
 		$bot = $this->Usuarios_model->buscaPerByModByUser(['idusuario' => $this->usuario->idusuario,'idmodulo' => $idmodulo,'po.activo' => 1]);
-		$this->session->set_userdata('perLocadores', json_encode($bot));
+		$this->session->set_userdata('perActas', json_encode($bot));
+		$anio = $this->Actas_model->anio(['activo' => 1]);
 		
 		$headers = array(
-			'0'=>['title' => 'Acciones', 'targets' => 0],'1'=>['title' => 'ID', 'targets' => 1],'2'=>['title' => 'Dependencia', 'targets' => 2],
-			'3'=>['title' => 'Denominaci&oacute;n', 'targets' => 3],'4'=>['title' => 'Estado', 'targets' => 4],'5'=>['title' => 'F.Inicio', 'targets' => 5],
-			'6'=>['title' => 'F.Fin', 'targets' => 6],'7'=>['title' => 'Base', 'targets' => 7],'8'=>['title' => 'Anexos', 'targets' => 8],
-			'9'=>['title' => 'F.Registro', 'targets' => 9],'10'=>['targets' => 'no-sort', 'orderable' => false],'11'=>['targets' => 1, 'visible' => false],
-			
+			'0'=>['title' => 'Acciones', 'targets' => 0],'1'=>['title' => 'A&ntilde;o', 'targets' => 1],'2'=>['title' => 'Correlativo', 'targets' => 2],
+			'3'=>['title' => 'Fecha', 'targets' => 3],'4'=>['title' => 'Descripci&oacute;n', 'targets' => 4],'5'=>['title' => 'Estado', 'targets' => 5],
+			'6'=>['targets' => 'no-sort', 'orderable' => false],
 		);
 		$data = array(
 			'headers' => $headers,
+			'anio' => $anio,
 		);
 		$this->load->view('main',$data);
 	}

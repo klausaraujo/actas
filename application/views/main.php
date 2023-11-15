@@ -3,7 +3,7 @@
 	<head>
 		<!-- Loader Header -->
 		<?php	require_once('inc/header.php');?>
-		<title>CONTRATACIONES</title>
+		<title>SEGUIMIENTO DE ACTAS Y ACUERDOS</title>
 	</head>
 	<body>
 		<!-- loader Start -->
@@ -25,17 +25,17 @@
 				<!-- TOP Nav Bar END -->
 				<div class="container-fluid">
 					<div class="row mx-1">
-					<?php 
+					<?php
 						//echo date_default_timezone_get();
 						if($this->uri->segment(1) == '') $this->load->view('modulos');
 						elseif($this->uri->segment(1) === 'usuarios' && $this->uri->segment(2) == '') $this->load->view('usuarios/usuarios');
 						elseif($this->uri->segment(1) === 'usuarios' && $this->uri->segment(2) === 'nuevo') $this->load->view('usuarios/form-new');
 						elseif($this->uri->segment(1) === 'usuarios' && $this->uri->segment(2) === 'editar') $this->load->view('usuarios/form-editar');
 						elseif($this->uri->segment(2) === 'perfil') $this->load->view('usuario/perfil');
-						elseif($this->uri->segment(1) === 'locadores' && $this->uri->segment(2) == '') $this->load->view('locadores/locadores');
-						elseif($this->uri->segment(1) === 'locadores' && $this->uri->segment(2) == 'nueva') $this->load->view('locadores/form-new');
-						elseif($this->uri->segment(1) === 'locadores' && $this->uri->segment(2) == 'editar') $this->load->view('locadores/form-editar');
-						elseif($this->uri->segment(1) === 'locadores' && $this->uri->segment(2) == 'evaluar') $this->load->view('locadores/evaluar');
+						elseif($this->uri->segment(1) === 'actas' && $this->uri->segment(2) == '') $this->load->view('actas/actas');
+						elseif($this->uri->segment(1) === 'actas' && $this->uri->segment(2) == 'nueva') $this->load->view('actas/form-new');
+						elseif($this->uri->segment(1) === 'actas' && $this->uri->segment(2) == 'editar') $this->load->view('actas/form-editar');
+						/*elseif($this->uri->segment(1) === 'locadores' && $this->uri->segment(2) == 'evaluar') $this->load->view('locadores/evaluar');*/
 					?>
 					</div>
 				</div>

@@ -89,17 +89,17 @@
 			});
 			<?}?>
 		</script>
-		<?}elseif($this->uri->segment(1) === 'locadores'){ ?>
-		<script src="<?=base_url()?>public/js/locadores/locadores.js"></script>
+		<?}elseif($this->uri->segment(1) === 'actas'){ ?>
+		<script src="<?=base_url()?>public/js/actas/actas.js"></script>
 		<script>
-			let botonesLoc = JSON.parse('<?=$this->session->userdata('perLocadores')?>');
+			let botonesLoc = JSON.parse('<?=$this->session->userdata('perActas')?>');
 			<?if($this->uri->segment(2) == ''){?>
-			let btnEdit = false, btnCan = false, btnEval = false, btnPub = false;
+			let btnEdit = false, btnAnular = false, btnEval = false, btnPub = false;
 			
 			$.each(botonesLoc,function(i,e){
 				if(e.idpermiso === '5') btnEdit = true;
-				else if(e.idpermiso === '6') btnCan = true;
-				else if(e.idpermiso === '7') btnEval = true;
+				else if(e.idpermiso === '6') btnEval = true;
+				else if(e.idpermiso === '7') btnAnular = true;
 				else if(e.idpermiso === '8') btnPub = true;
 			});
 			<?}elseif($this->uri->segment(2) === 'evaluar'){?>
@@ -107,7 +107,7 @@
 			<?}?>
 		</script>
 		<?}
-		if(($this->uri->segment(1) === 'usuarios' || $this->uri->segment(1) === 'locadores') && $this->uri->segment(2) == ''){ ?>
+		if(($this->uri->segment(1) === 'usuarios' || $this->uri->segment(1) === 'actas') && $this->uri->segment(2) == ''){ ?>
 		<script>
 			const headers = JSON.parse('<?=json_encode($headers)?>');
 		</script>
