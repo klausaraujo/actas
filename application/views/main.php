@@ -2,7 +2,9 @@
 <html lang="es">
 	<head>
 		<!-- Loader Header -->
-		<?php	require_once('inc/header.php');?>
+		<?php	require_once('inc/header.php');
+			date_default_timezone_set('America/Lima');
+		?>
 		<title>SEGUIMIENTO DE ACTAS Y ACUERDOS</title>
 	</head>
 	<body>

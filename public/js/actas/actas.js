@@ -103,7 +103,7 @@ $(document).ready(function (){
 					}
 				},
 				{ data: 'correlativo', render: function(data){ return ceros(data, 5); } },{ data: 'acuerdo' },{ data: 'responsables' },
-				{ data: 'fecha_inicial',render:function(data){ let fecha = new Date(data); return fecha.toLocaleDateString(); } },
+				{ data: 'fecha_inicial',render:function(data){ let fecha = new Date(data); return fecha.toLocaleString('es-PE', { timeZone: 'UTC', year: 'numeric', month: 'numeric', day: 'numeric' }); } },
 				{ data: 'check_inicio', render: function(data){ return '<input type="checkbox" class="inicio" '+(data == '1'?'checked':'')+' />'; } },
 				{
 					data: 'fecha_iniciacion',
@@ -111,7 +111,7 @@ $(document).ready(function (){
 						let res = (data == null? '': data);
 						return '<input class="form-control form-control-sm iniciacion" style="width:100px" type="text" value="'+res+'"/>';
 					}
-				},{ data: 'fecha_final',render:function(data){ let fecha = new Date(data); return fecha.toLocaleDateString(); } },
+				},{ data: 'fecha_final',render:function(data){ let fecha = new Date(data); return fecha.toLocaleString('es-PE', { timeZone: 'UTC', year: 'numeric', month: 'numeric', day: 'numeric' }); } },
 				{ data: 'check_final', render: function(data){ return '<input type="checkbox" class="final" '+(data == '1'?'checked':'')+' />'; } },
 				{
 					data: 'fecha_finalizacion',
@@ -138,6 +138,9 @@ $(document).ready(function (){
 				{title:'Finalizado',targets: 8},{title:'Fecha Finalizado',targets: 9},{title:'Estado',targets: 10},
 			], order: [],
 		});
+		
+		var resolvedOptions = Intl.DateTimeFormat().resolvedOptions();
+		console.log(resolvedOptions);
 	}
 });
 
