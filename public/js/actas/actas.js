@@ -1,4 +1,4 @@
-let tablaActas = null, tablaEval = null;
+let tablaActas = null, tablaAcuerdos = null;
 
 $(document).ready(function (){
 	if(segmento2 == ''){
@@ -18,6 +18,8 @@ $(document).ready(function (){
 					render: function(data){
 						let hrefEdit = (data.activo === '1' && btnEdit)?'href="'+base_url+'actas/editar?id='+data.idacta+'"':'';
 						let hrefAnular = (data.activo === '1' && btnAnular && data.activo === '1')?'href="'+base_url+'actas/anular?id='+data.idacta+'"':'';
+						let hrefAcuerdos = (data.activo === '1' && btnAcuerdos)?'href="'+base_url+'actas/acuerdos?id='+data.idacta+'"':'';
+						let hrefReporte = (data.activo === '1' && btnReporte)?'href="'+base_url+'actas/reporte?id='+data.idacta+'"':'';
 						/*let hrefEval = (data.activo === '1' && btnEval && parseInt(data.idestado) < 3 && 
 							data.calificado === '0' && data.idestado === '2')?'href="'+base_url+'locadores/evaluar?id='+data.idconvocatoria+'"':'';
 						let hrefPub = (data.activo === '1' && btnPub && parseInt(data.idestado) < 3 && parseInt(data.calificado))?
@@ -26,12 +28,12 @@ $(document).ready(function (){
 							'<div class="btn-group">'+
 								'<a '+(hrefEdit?'title="Editar Acta" '+hrefEdit:'')+' class="bg-info btnTable">'+
 									'<img src="'+base_url+'public/images/edit_ico.png" width="22"></a>'+
+								'<a '+(hrefAcuerdos?'title="Registrar Acuerdos" '+hrefAcuerdos:'')+' class="bg-warning btnTable px-1">'+
+									'<img src="'+base_url+'public/images/evaluar_ico.png" width="15"></a>'+
 								'<a '+(hrefAnular?'title="Anular Acta" '+hrefAnular:'')+' class="bg-danger btnTable '+(hrefAnular?'anular':'')+'">'+
 									'<img src="'+base_url+'public/images/cancel_ico.png" width="22"></a>'+
-								/*'<a '+(hrefEval?'title="Evaluar Postulantes" '+hrefEval:'')+' class="bg-warning btnTable px-1">'+
-									'<img src="'+base_url+'public/images/evaluar_ico.png" width="15"></a>'+
-								'<a '+(hrefPub?'title="Publicar Resultados" '+hrefPub:'')+' class="bg-light btnTable border border-secondary" target="_blank">'+
-									'<img src="'+base_url+'public/images/result_ico.png" width="18"></a>'+*/
+								'<a '+(hrefReporte?'title="Ver Reporte" '+hrefReporte:'')+' class="bg-light btnTable border border-secondary" target="_blank">'+
+									'<img src="'+base_url+'public/images/pdf_ico.png" width="18"></a>'+
 							'</div>';
 						return btnAccion;
 					}
@@ -75,108 +77,65 @@ $(document).ready(function (){
 			],
 			columnDefs:headers, order: [],
 		});
-	}else if(segmento2 === 'evaluar'){
-		tablaEval = $('#tablaEval').DataTable({
-			data: postulantes,
+	}else if(segmento2 === 'acuerdos'){
+		tablaAcuerdos = $('#tablaAcuerdos').DataTable({
+			ajax: {
+				url: base_url + 'actas/listaacuerdos',
+				type: 'post',
+				data: function(d){
+					d.idacta = $('#idacta').val()
+				}
+			},
 			bAutoWidth:false, bDestroy:true, responsive:true, select:false, lengthMenu:[[10, 25, 50, 100, -1], [10, 25, 50, 100, 'Todas']], language: lngDataTable,
 			columns:[
-				{ data: 'idpostulacion' },{ data: 'numero_documento' },{ data: 'numero_ruc' },{ data: 'nombre' },{ data: 'profesion' },{ data: 'nivel' },
 				{
-					data: 'anexo_01',
-					render: function(data){
-						let href = data == ''?'':'href="'+base_url+'locadores/descargarp?file='+data+'"', ext = $(data.split('.')).get(-1);
-						let img = '';
-						if(ext === 'doc' || ext === 'docx'){
-							img = '<a title="Descargar" '+href+'><img src="'+base_url+'public/images/word_ico.png" width="27"></a>';
-						}else if(ext === 'pdf'){
-							img = '<a title="Descargar" '+href+'><img src="'+base_url+'public/images/pdf_ico.png" width="27"></a>';
-						}
-						return img;
-					}
-				},
-				{
-					data: 'anexo_02',
-					render: function(data){
-						let href = data == ''?'':'href="'+base_url+'locadores/descargarp?file='+data+'"', ext = $(data.split('.')).get(-1);
-						let img = '';
-						if(ext === 'doc' || ext === 'docx'){
-							img = '<a title="Descargar" '+href+'><img src="'+base_url+'public/images/word_ico.png" width="27"></a>';
-						}else if(ext === 'pdf'){
-							img = '<a title="Descargar" '+href+'><img src="'+base_url+'public/images/pdf_ico.png" width="27"></a>';
-						}
-						return img;
-					}
-				},
-				{
-					data: 'anexo_03',
-					render: function(data){
-						let href = data == ''?'':'href="'+base_url+'locadores/descargarp?file='+data+'"', ext = $(data.split('.')).get(-1);
-						let img = '';
-						if(ext === 'doc' || ext === 'docx'){
-							img = '<a title="Descargar" '+href+'><img src="'+base_url+'public/images/word_ico.png" width="27"></a>';
-						}else if(ext === 'pdf'){
-							img = '<a title="Descargar" '+href+'><img src="'+base_url+'public/images/pdf_ico.png" width="27"></a>';
-						}
-						return img;
-					}
-				},
-				{
-					data: 'anexo_04',
-					render: function(data){
-						let href = data == ''?'':'href="'+base_url+'locadores/descargarp?file='+data+'"', ext = $(data.split('.')).get(-1);
-						let img = '';
-						if(ext === 'doc' || ext === 'docx'){
-							img = '<a title="Descargar" '+href+'><img src="'+base_url+'public/images/word_ico.png" width="27"></a>';
-						}else if(ext === 'pdf'){
-							img = '<a title="Descargar" '+href+'><img src="'+base_url+'public/images/pdf_ico.png" width="27"></a>';
-						}
-						return img;
-					}
-				},
-				{
-					data: 'anexo_05',
-					render: function(data){
-						let href = data == ''?'':'href="'+base_url+'locadores/descargarp?file='+data+'"', ext = $(data.split('.')).get(-1);
-						let img = '';
-						if(ext === 'doc' || ext === 'docx'){
-							img = '<a title="Descargar" '+href+'><img src="'+base_url+'public/images/word_ico.png" width="27"></a>';
-						}else if(ext === 'pdf'){
-							img = '<a title="Descargar" '+href+'><img src="'+base_url+'public/images/pdf_ico.png" width="27"></a>';
-						}
-						return img;
-					}
-				},
-				{
-					data: 'anexo_06',
-					render: function(data){
-						let href = data == ''?'':'href="'+base_url+'locadores/descargarp?file='+data+'"', ext = $(data.split('.')).get(-1);
-						let img = '';
-						if(ext === 'doc' || ext === 'docx'){
-							img = '<a title="Descargar" '+href+'><img src="'+base_url+'public/images/word_ico.png" width="27"></a>';
-						}else if(ext === 'pdf'){
-							img = '<a title="Descargar" '+href+'><img src="'+base_url+'public/images/pdf_ico.png" width="27"></a>';
-						}
-						return img;
-					}
-				},
-				{
-					render: function(data,type,full,meta){
-						return '<div class="row"><input type="text" class="form-control form-control-sm puntaje moneda bg-light mx-auto"'
-								+' style="width:4em;font-size:0.8rem" value="'+full.puntaje+'" /></div>';
-					},
+					data: null,
 					orderable: false,
+					render: function(data){
+						let btnAccion =
+							'<div class="btn-group">'+
+								'<a title="Editar Acuerdo" href="#" class="bg-info btnTable">'+
+									'<img src="'+base_url+'public/images/edit_ico.png" width="22"></a>'+
+								'<a title="Anular Acuerdo" href="'+base_url+'acuerdos/anular?id='+data.idacuerdo+'&idacta='+data.idacta+'" class="bg-danger btnTable anular">'+
+									'<img src="'+base_url+'public/images/cancel_ico.png" width="22"></a>'+
+							'</div>';							
+						return btnAccion;
+					}
+				},
+				{ data: 'correlativo', render: function(data){ return ceros(data, 5); } },{ data: 'acuerdo' },{ data: 'responsables' },
+				{ data: 'fecha_inicial',render:function(data){ let fecha = new Date(data); return fecha.toLocaleDateString(); } },
+				{ data: 'check_inicio', render: function(data){ return '<input type="checkbox" class="inicio" '+(data == '1'?'checked':'')+' />'; } },
+				{
+					data: 'fecha_iniciacion',
+					render: function(data){
+						let res = (data == null? '': data);
+						return '<input class="form-control form-control-sm iniciacion" style="width:100px" type="text" value="'+res+'"/>';
+					}
+				},{ data: 'fecha_final',render:function(data){ let fecha = new Date(data); return fecha.toLocaleDateString(); } },
+				{ data: 'check_final', render: function(data){ return '<input type="checkbox" class="final" '+(data == '1'?'checked':'')+' />'; } },
+				{
+					data: 'fecha_finalizacion',
+					render: function(data){
+						let res = (data == null? '': data);
+						return '<input class="form-control form-control-sm finalizacion" style="width:100px" type="text" value="'+res+'"/>';
+					}
 				},
 				{
-					render: function(data,type,full,meta){
-						return '<div class="row"><input type="checkbox" class="mx-auto" '+ (full.ganador === '1' ? ' checked' : '') +' /></div>';
-					},
-					orderable: false,
-				},
+					data: 'activo',
+					render: function(data){
+						let var_status = '';
+						switch(data){
+							case '1': var_status = '<span class="text-success">Activo</span>'; break;
+							case '0': var_status = '<span class="text-danger">Anulado</span>'; break;
+						}
+						return var_status;
+					}
+				}
 			],
 			columnDefs:[
-				{targets: 0,visible: false},{title:'DNI/CE',targets: 1},{title:'RUC',targets: 2},{title:'Postulante',targets: 3},{title:'Profesi&oacute;n',targets: 4},
-				{title:'Nivel',targets: 5},{title:'Anexo 1',targets: 6},{title:'Anexo 2',targets: 7},{title:'Anexo 3',targets: 8},{title:'Anexo 4',targets: 9},
-				{title:'Anexo 5',targets: 10},{title:'Anexo 6',targets: 11},{title:'Puntaje',targets: 12},{title:'Ganador',targets: 13},
+				{title: 'Acciones',targets: 0},{title:'Correlativo',targets: 1},{title:'Acuerdo',targets: 2},{title:'Responsables',targets: 3},
+				{title:'Inicio(Acuerdo)',targets: 4},{title:'Iniciado',targets: 5},{title:'Fecha Iniciado',targets: 6},{title:'Fin(Acuerdo)',targets: 7},
+				{title:'Finalizado',targets: 8},{title:'Fecha Finalizado',targets: 9},{title:'Estado',targets: 10},
 			], order: [],
 		});
 	}
@@ -214,20 +173,70 @@ $('.atach').bind('change', function(){
 });*/
 $('.form').validate({
 	errorClass: 'form_error',
-	validClass: 'success',
+	/*validClass: 'success',*/
 	rules: { 
-		descripcion: { required: function () { if ($('#descripcion').css('display') != 'none') return true; else return false; } },
+		acuerdo: { required: function () { if ($('#acuerdo').css('display') != 'none') return true; else return false; } },
+		responsables: { required: function () { if ($('#responsables').css('display') != 'none') return true; else return false; } },
 	},
 	messages: {
-		descripcion: { required: 'Campo requerido' },
+		acuerdo: { required: 'Campo requerido' },
+		responsables: { required: 'Campo requerido' },
 	},
 	errorPlacement: function(error, element){
 		error.insertAfter(element);
 	},
 	submitHandler: function (form, event){
-		$(boton).html('<span class="spinner-border spinner-border-sm"></span>&nbsp;&nbsp;Cargando...');
-		$(boton).addClass('disabled'); $('.btn-cancelar').addClass('disabled');
-		return true;
+		event.preventDefault();
+		let json = [{ 'correlativo':$('#correlativo').val(),'acuerdo':$('#acuerdo').val(),'responsables':$('#responsables').val(),'fecha_inicial':$('#finicio').val(),
+					'check_inicio':0,'fecha_iniciacion':'','fecha_final':$('#ffin').val(),'check_final':0,'fecha_finalizacion':'',
+					'activo':'1'
+			}];
+		
+		tablaAcuerdos.rows.add(json).draw();
+		form.reset();
+		//let data = tablaAcuerdos.rows().data().toArray();
+		let data = tablaAcuerdos.rows().data(), nro = data.length, n = 0;
+		$.each(data,function(i,e){
+			if(i === nro - 1) n = parseInt(e.correlativo) + 1;
+		});
+		$('#correlativo').val(n);
+	}
+});
+
+$('#guardar').bind('click',function(e){
+	let json = [], i = 0, idacta = $('#idacta').val(), check_i = 0, check_f = 0;
+	if(tablaAcuerdos.rows().data().length > 0){
+		tablaAcuerdos.rows().iterator('row', function (context, index){
+			let node = $(this.row(index).node());
+			let ci = node.find('.inicio'), cf = node.find('.final'), fi = node.find('.iniciacion'), ff = node.find('.finalizacion');
+			let data = this.row(index).data();
+			check_i = ci.prop('checked')? 1: 0; check_f = cf.prop('checked')? 1: 0; fi = (fi.val() != ''? fi.val() : null); ff = (ff.val() != ''? ff.val() : null);
+			
+			json[i] = {'idacta':idacta,'correlativo':data.correlativo,'acuerdo':data.acuerdo,'responsables':data.responsables,'fecha_inicial':data.fecha_inicial,
+				'fecha_final':data.fecha_final,'check_inicio':check_i,'check_final':check_f,'activo':1,'fecha_iniciacion':fi,'fecha_finalizacion':ff};
+			i++;
+		});
+		$.ajax({
+			data: JSON.stringify(json),
+			url: base_url + 'acuerdos/registrar',
+			method: 'POST',
+			dataType: 'JSON',
+			error: function(xhr){ $('#guardar').removeClass('disabled'), $('#guardar').html('Guardar/Actualizar Detalle'); },
+			beforeSend: function(){
+				$('#guardar').html('<span class="spinner-border spinner-border-sm"></span>&nbsp;&nbsp;Cargando...');
+				$('#guardar').addClass('disabled');
+			},
+			success: function(data){
+				$('#guardar').removeClass('disabled'), $('#guardar').html('Guardar/Actualizar Detalle');
+				if(parseInt(data.status) === 200){
+					tablaAcuerdos.ajax.reload();
+					$('#correlativo').val(data.nro);
+				}
+				$('.resp').html(data.data);
+				setTimeout(function () { $('.resp').html(''); }, 2500);
+				
+			}
+		});
 	}
 });
 
@@ -249,6 +258,34 @@ $('#tablaActas').bind('click','a',function(e){
 				success: function(data){
 					if(parseInt(data.status) === 200){
 						tablaActas.ajax.reload();
+					}
+					$('.resp').html(data.msg);
+					setTimeout(function () { $('.resp').html(''); }, 2500);
+				}
+			});
+		}
+	}
+});
+
+$('#tablaAcuerdos').bind('click','a',function(e){
+	let el = e.target, a = $(el).closest('a'), mensaje = '';
+	let data = tablaAcuerdos.row(a).child.isShown()? tablaAcuerdos.row(a).data() : tablaAcuerdos.row($(el).parents('tr')).data();
+	if($(a).hasClass('anular')){
+		e.preventDefault();
+		mensaje = 'Seguro que desea Anular el Acuerdo?';
+		let confirmacion = confirm(mensaje);
+		if(confirmacion){
+			$.ajax({
+				data: {},
+				url: $(a).attr('href'),
+				method: 'GET',
+				dataType: 'JSON',
+				error: function(xhr){},
+				beforeSend: function(){},
+				success: function(data){
+					if(parseInt(data.status) === 200){
+						tablaAcuerdos.ajax.reload();
+						$('#correlativo').val(data.nro);
 					}
 					$('.resp').html(data.msg);
 					setTimeout(function () { $('.resp').html(''); }, 2500);

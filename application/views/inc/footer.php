@@ -94,13 +94,13 @@
 		<script>
 			let botonesLoc = JSON.parse('<?=$this->session->userdata('perActas')?>');
 			<?if($this->uri->segment(2) == ''){?>
-			let btnEdit = false, btnAnular = false, btnEval = false, btnPub = false;
+			let btnEdit = false, btnAnular = false, btnAcuerdos = false, btnReporte = false;
 			
 			$.each(botonesLoc,function(i,e){
 				if(e.idpermiso === '5') btnEdit = true;
-				else if(e.idpermiso === '6') btnEval = true;
+				else if(e.idpermiso === '6') btnAcuerdos = true;
 				else if(e.idpermiso === '7') btnAnular = true;
-				else if(e.idpermiso === '8') btnPub = true;
+				else if(e.idpermiso === '8') btnReporte = true;
 			});
 			<?}elseif($this->uri->segment(2) === 'evaluar'){?>
 				const postulantes = JSON.parse('<?=json_encode($data)?>');

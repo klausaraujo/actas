@@ -23,6 +23,15 @@ class Actas_model extends CI_Model
         $result = $this->db->get();
 		return ($result->num_rows() > 0)? $result->row() : array();
     }
+	public function listaAcuerdos($where)
+    {
+        $this->db->select('*,DATE_FORMAT(fecha_inicial,"%Y-%m-%d") as fecha_inicial,DATE_FORMAT(fecha_final,"%Y-%m-%d") as fecha_final');
+        $this->db->from('acta_acuerdos');
+		$this->db->where($where);
+		$this->db->order_by('correlativo', 'asc');
+        $result = $this->db->get();
+		return ($result->num_rows() > 0)? $result->result() : array();
+    }
 	public function anio($where)
 	{
 		$rs = $this->db->where($where)->from('anio')->get();
@@ -31,6 +40,13 @@ class Actas_model extends CI_Model
 	public function correlativo($where)
 	{
 		return $this->db->where($where)->from('acta')->count_all_results();
+	}
+	public function cAcuerdos($where)
+	{
+		$this->db->select_max('correlativo');
+		$this->db->where($where);
+		$query = $this->db->get('acta_acuerdos');
+		return $query->row();
 	}
 	public function actualizar($data,$where,$tabla)
 	{

@@ -120,7 +120,65 @@ class Main extends CI_Controller
 		
 		echo json_encode($data);
 	}
-	public function cargaanexo($file,$i,$n)
+	public function acuerdos()
+	{
+		$this->load->model('Actas_model');
+		$corr = $this->Actas_model->cAcuerdos(['idacta'=>$this->input->get('id'),'activo' => 1]);
+		
+		$this->load->view('main',['corr' => floatval($corr->correlativo)+1]);
+	}
+	public function listaacuerdos()
+	{
+		$this->load->model('Actas_model');
+		$idacta = $this->input->post('idacta');
+		$acuerdos = $this->Actas_model->listaAcuerdos(['idacta' => $idacta, 'activo' => 1]);		
+		echo json_encode(['data' => $acuerdos]);
+	}
+	public function regacuerdos()
+	{
+		$status = 500; $msg = 'No se pudo Guardar/Actualizar el Acuerdo'; $nro = 0;
+		$this->load->model('Actas_model');
+		
+		$get = json_decode(file_get_contents('php://input'));
+		if($this->Actas_model->registrarBatch(['idacta'=>$get[0]->idacta],$get,'acta_acuerdos')){
+			$status = 200;
+			$msg = 'Acuerdo Guardado/Actualizado';
+			$corr = $this->Actas_model->cAcuerdos(['idacta'=>$get[0]->idacta,'activo' => 1]);
+			$nro = floatval($corr->correlativo)+1;
+		}
+		
+		$data = array(
+			'status' => $status,
+			'data' => $msg,
+			'nro' => $nro
+		);
+		echo json_encode($data);
+	}
+	public function anularacuerdos()
+	{
+		$this->load->model('Actas_model');
+		$id = $this->input->get('id'); $msg = 'No se pudo Anular el Acuerdo'; $status = 500; $nro = 0;
+		
+		if($this->Actas_model->actualizar(
+			['activo' => 0],
+			['idacuerdo' => $id],
+			'acta_acuerdos'
+		)){
+			$status = 200;
+			$msg = 'Acuerdo Anulado';
+			$corr = $this->Actas_model->cAcuerdos(['idacta'=>$this->input->get('idacta'),'activo' => 1]);
+			$nro = floatval($corr->correlativo)+1;
+		}
+		
+		$data = array(
+			'status' => $status,
+			'msg' => $msg,
+			'nro' => $nro
+		);
+		
+		echo json_encode($data);
+	}
+	/*public function cargaanexo($file,$i,$n)
 	{
 		$path =  $_SERVER['DOCUMENT_ROOT'].'/contrataciones/public/adjuntos/anexos_locadores/'; $status = 500; $nombre = '';
 		
@@ -228,7 +286,7 @@ class Main extends CI_Controller
 			}
 		endforeach;
 		header('location:'.base_url().'locadores');
-	}
+	}*/
 	public function ver()
 	{
 		$this->load->model('Locadores_model');
