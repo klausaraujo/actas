@@ -123,7 +123,7 @@ class Main extends CI_Controller
 	public function acuerdos()
 	{
 		$this->load->model('Actas_model');
-		$corr = $this->Actas_model->cAcuerdos(['idacta'=>$this->input->get('id'),'activo' => 1]);
+		$corr = $this->Actas_model->cAcuerdos(['idacta'=>$this->input->get('id')]);
 		
 		$this->load->view('main',['corr' => floatval($corr->correlativo)+1]);
 	}
@@ -144,6 +144,9 @@ class Main extends CI_Controller
 		/*$i = 0;
 		foreach($get as $row):
 			$ini = date_format(date_create($row->fecha_inicial),'Y-m-d'); $fin = date_format(date_create($row->fecha_final),'Y-m-d');
+			/*$finicio =  && $_POST['eini'] != ''? 1 : 0; $ffinaliz = isset($_POST['cefin']) && $_POST['efin'] != ''? 1 : 0;
+			$finicio = $row->check_inicio && $row->fecha_iniciacion? date('Y-m-d',strtotime(str_replace('/','-',$row->fecha_iniciacion))) : null;
+			$ffinaliz = $row->check_final && $row->fecha_finalizacion? date('Y-m-d',strtotime(str_replace('/','-',$row->fecha_finalizacion))) : null;
 			$fila[$i] = array(
 				'idacta' => $row->idacta,
 				'correlativo' => $row->correlativo,
@@ -151,19 +154,19 @@ class Main extends CI_Controller
 				'responsables' => $row->responsables,
 				'fecha_inicial' => $ini,
 				'fecha_final' => $fin,
-				'fecha_iniciacion' => null,
-				'check_inicio' => 0,
-				'fecha_finalizacion' => null,
-				'check_final' => 0,
-				'activo' => $row->activo,
+				'fecha_iniciacion' => $finicio,
+				'check_inicio' => $row->check_inicio,
+				'fecha_finalizacion' => $ffinaliz,
+				'check_final' => $row->check_final,
+				'activo' => 1,
 			);
 			$i++;
 		endforeach;*/
 		
-		if($this->Actas_model->registrarBatch(['idacta'=>$get[0]->idacta],$get,'acta_acuerdos')){
+		if($this->Actas_model->registrarBatch(['idacta' => $get[0]->idacta],$get,'acta_acuerdos')){
 			$status = 200;
 			$msg = 'Acuerdo Guardado/Actualizado';
-			$corr = $this->Actas_model->cAcuerdos(['idacta'=>$get[0]->idacta,'activo' => 1]);
+			$corr = $this->Actas_model->cAcuerdos(['idacta'=>$get[0]->idacta]);
 			$nro = floatval($corr->correlativo)+1;
 		}
 		
@@ -215,7 +218,7 @@ class Main extends CI_Controller
 		)){
 			$status = 200;
 			$msg = 'Acuerdo Anulado';
-			$corr = $this->Actas_model->cAcuerdos(['idacta'=>$this->input->get('idacta'),'activo' => 1]);
+			$corr = $this->Actas_model->cAcuerdos(['idacta'=>$this->input->get('idacta')]);
 			$nro = floatval($corr->correlativo)+1;
 		}
 		

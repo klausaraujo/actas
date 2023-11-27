@@ -144,7 +144,7 @@ $(document).ready(function (){
 					data: null,
 					orderable: false,
 					render: function(data){
-						let color = 0, finic = isNaN(Date.parse((data.fecha_iniciacion)))? 0 : Date.parse((data.fecha_iniciacion).slice(0,-9)); let hoy = new Date();
+						let color, finic = isNaN(Date.parse((data.fecha_iniciacion)))? 0 : Date.parse((data.fecha_iniciacion).slice(0,-9)); let hoy = new Date();
 						hoy = Date.parse(hoy.toLocaleDateString('es-PE')); let img = '';
 						
 						if(data.activo === '0'){
@@ -187,8 +187,8 @@ $(document).ready(function (){
 			], order: [],
 		});
 		
-		var resolvedOptions = Intl.DateTimeFormat().resolvedOptions();
-		console.log(resolvedOptions);
+		/*var resolvedOptions = Intl.DateTimeFormat().resolvedOptions();
+		console.log(resolvedOptions);*/
 	}
 });
 
@@ -239,32 +239,33 @@ $('.form').validate({
 	submitHandler: function (form, event){
 		event.preventDefault();
 		let json = [{ 'correlativo':$('#correlativo').val(),'acuerdo':$('#acuerdo').val(),'responsables':$('#responsables').val(),'fecha_inicial':$('#finicio').val(),
-					'check_inicio':0,'fecha_iniciacion':'','fecha_final':$('#ffin').val(),'check_final':0,'fecha_finalizacion':'',
-					'activo':'1'
-			}];
+				'check_inicio':0,'fecha_iniciacion':'','fecha_final':$('#ffin').val(),'check_final':0,'fecha_finalizacion':'','activo':'1'
+		}];
 		
 		tablaAcuerdos.rows.add(json).draw();
 		form.reset();
 		//let data = tablaAcuerdos.rows().data().toArray();
-		let data = tablaAcuerdos.rows().data(), nro = data.length, n = 0;
+		/*let data = tablaAcuerdos.rows().data(), nro = data.length, n = 0;
 		$.each(data,function(i,e){
 			if(i === nro - 1) n = parseInt(e.correlativo) + 1;
 		});
-		$('#correlativo').val(n);
+		$('#correlativo').val(n);*/
+		guardar();
 	}
 });
 
-$('#guardar').bind('click',function(e){
+function guardar(){
 	let json = [], i = 0, idacta = $('#idacta').val(), check_i = 0, check_f = 0;
 	if(tablaAcuerdos.rows().data().length > 0){
 		tablaAcuerdos.rows().iterator('row', function (context, index){
 			let node = $(this.row(index).node());
-			let ci = node.find('.inicio'), cf = node.find('.final'), fi = node.find('.iniciacion'), ff = node.find('.finalizacion');
+			let ci = node.find('.inicio'), cf = node.find('.final');//, fi = node.find('.iniciacion'), ff = node.find('.finalizacion');
 			let data = this.row(index).data();
-			check_i = ci.prop('checked')? 1: 0; check_f = cf.prop('checked')? 1: 0; fi = (fi.val() != ''? fi.val() : null); ff = (ff.val() != ''? ff.val() : null);
+			check_i = ci.prop('checked')? 1: 0; check_f = cf.prop('checked')? 1: 0;
 			
 			json[i] = {'idacta':idacta,'correlativo':data.correlativo,'acuerdo':data.acuerdo,'responsables':data.responsables,'fecha_inicial':data.fecha_inicial,
-				'fecha_final':data.fecha_final,'check_inicio':check_i,'check_final':check_f,'activo':1,'fecha_iniciacion':fi,'fecha_finalizacion':ff};
+				'fecha_final':data.fecha_final,'check_inicio':check_i,'check_final':check_f,'activo':1,'fecha_iniciacion':data.fecha_iniciacion,
+				'fecha_finalizacion':data.fecha_finalizacion};
 			i++;
 		});
 		$.ajax({
@@ -274,11 +275,12 @@ $('#guardar').bind('click',function(e){
 			dataType: 'JSON',
 			error: function(xhr){ $('#guardar').removeClass('disabled'), $('#guardar').html('Guardar/Actualizar Detalle'); },
 			beforeSend: function(){
-				$('#guardar').html('<span class="spinner-border spinner-border-sm"></span>&nbsp;&nbsp;Cargando...');
-				$('#guardar').addClass('disabled');
+				$('#btnAgregar').html('<span class="spinner-border spinner-border-sm"></span>&nbsp;&nbsp;Cargando...');
+				$('#btnAgregar').addClass('disabled');
 			},
 			success: function(data){
-				$('#guardar').removeClass('disabled'), $('#guardar').html('Guardar/Actualizar Detalle');
+				//$('#guardar').removeClass('disabled'), $('#guardar').html('Guardar/Actualizar Detalle');
+				$('#btnAgregar').html('Agregar al Detalle'), $('#btnAgregar').removeClass('disabled');
 				if(parseInt(data.status) === 200){
 					tablaAcuerdos.ajax.reload();
 					$('#correlativo').val(data.nro);
@@ -289,7 +291,7 @@ $('#guardar').bind('click',function(e){
 			}
 		});
 	}
-});
+}
 
 $('#tablaActas').bind('click','a',function(e){
 	let el = e.target, a = $(el).closest('a'), mensaje = '';
@@ -362,7 +364,6 @@ $('#tablaAcuerdos').bind('click','a',function(e){
 			fecha = fecha.toLocaleString('es-PE', { timeZone: 'UTC', year: 'numeric', month: 'numeric', day: 'numeric' });
 			$('#cefin').prop('checked', true), $('#efin').removeClass('d-none'), $('#efin').val(fecha);
 		}
-		console.log(data);
 	}
 });
 
