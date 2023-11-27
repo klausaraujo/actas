@@ -58,10 +58,10 @@
 									</div>
 								</div>
 							</form>
-							<div class="container-fluid row"><hr class="col-sm-12"></div>
+							<!--<div class="container-fluid row"><hr class="col-sm-12"></div>
 							<div class="col-sm-12 mx-auto pb-2">
 								<button class="btn btn-sabogal ml-3 mr-4" id="guardar" name="guardar">Guardar/Actualizar Detalle</button>
-							</div>
+							</div>-->
 						</div>
 					</div>
 					
