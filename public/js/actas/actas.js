@@ -92,34 +92,43 @@ $(document).ready(function (){
 					data: null,
 					orderable: false,
 					render: function(data){
+						let hrefEditar = data.activo === '0'? 'class="bg-info btnTable"' : 'href="#" data-target="#modalEdit" data-toggle="modal" class="bg-info btnTable editar"';
+						let hrefAnular = data.activo === '0'? 'class="bg-danger btnTable"' : 'href="'+base_url+'acuerdos/anular?id='+
+								data.idacuerdo+'&idacta='+data.idacta+'" class="bg-danger btnTable anular"';
 						let btnAccion =
 							'<div class="btn-group">'+
-								'<a title="Editar Acuerdo" href="#" class="bg-info btnTable">'+
-									'<img src="'+base_url+'public/images/edit_ico.png" width="22"></a>'+
-								'<a title="Anular Acuerdo" href="'+base_url+'acuerdos/anular?id='+data.idacuerdo+'&idacta='+data.idacta+'" class="bg-danger btnTable anular">'+
+								'<a title="Editar Acuerdo" '+hrefEditar+' >'+
+									'<img src="'+base_url+'public/images/edit_ico.png" width="22"></a><a title="Anular Acuerdo" '+hrefAnular+' >'+
 									'<img src="'+base_url+'public/images/cancel_ico.png" width="22"></a>'+
 							'</div>';							
 						return btnAccion;
 					}
 				},
 				{ data: 'correlativo', render: function(data){ return ceros(data, 5); } },{ data: 'acuerdo' },{ data: 'responsables' },
-				{ data: 'fecha_inicial',render:function(data){ let fecha = new Date(data); return fecha.toLocaleString('es-PE', { timeZone: 'UTC', year: 'numeric', month: 'numeric', day: 'numeric' }); } },
-				{ data: 'check_inicio', render: function(data){ return '<input type="checkbox" class="inicio" '+(data == '1'?'checked':'')+' />'; } },
+				{ data: 'fecha_inicial', render:function(data){ let fecha = new Date(data);
+							return fecha.toLocaleString('es-PE', { timeZone: 'UTC', year: 'numeric', month: 'numeric', day: 'numeric' }); } },
 				{
-					data: 'fecha_iniciacion',
+					data: 'check_inicio',
 					render: function(data){
-						let res = (data == null? '': data);
-						return '<input class="form-control form-control-sm iniciacion" style="width:100px" type="text" value="'+res+'"/>';
-					}
-				},{ data: 'fecha_final',render:function(data){ let fecha = new Date(data); return fecha.toLocaleString('es-PE', { timeZone: 'UTC', year: 'numeric', month: 'numeric', day: 'numeric' }); } },
-				{ data: 'check_final', render: function(data){ return '<input type="checkbox" class="final" '+(data == '1'?'checked':'')+' />'; } },
-				{
-					data: 'fecha_finalizacion',
-					render: function(data){
-						let res = (data == null? '': data);
-						return '<input class="form-control form-control-sm finalizacion" style="width:100px" type="text" value="'+res+'"/>';
+						return '<div class="abs-center"><label class="check"><input type="checkbox" class="inicio" '+
+								(data == '1'?'checked':'')+' onclick="return false;" /></label></div>';
 					}
 				},
+				{ data: 'fecha_iniciacion', render:function(data){
+						let fecha = isNaN(Date.parse(data))? '' : new Date(data);
+						return (fecha != '')? fecha.toLocaleString('es-PE', { timeZone: 'UTC', year: 'numeric', month: 'numeric', day: 'numeric' }) : ''; } },
+				{ data: 'fecha_final', render:function(data){ let fecha = new Date(data);
+						return fecha.toLocaleString('es-PE', { timeZone: 'UTC', year: 'numeric', month: 'numeric', day: 'numeric' }); } },
+				{
+					data: 'check_final',
+					render: function(data){
+						return '<div class="abs-center"><label class="check"><input type="checkbox" class="final" '+
+								(data == '1'?'checked':'')+' onclick="return false;" /></label></div>';
+					}
+				},
+				{ data: 'fecha_finalizacion', render:function(data){
+						let fecha = isNaN(Date.parse(data))? '' : new Date(data);
+						return (fecha != '')? fecha.toLocaleString('es-PE', { timeZone: 'UTC', year: 'numeric', month: 'numeric', day: 'numeric' }) : ''; } },
 				{
 					data: 'activo',
 					render: function(data){
@@ -130,12 +139,51 @@ $(document).ready(function (){
 						}
 						return var_status;
 					}
+				},
+				{
+					data: null,
+					orderable: false,
+					render: function(data){
+						let color = 0, finic = isNaN(Date.parse((data.fecha_iniciacion)))? 0 : Date.parse((data.fecha_iniciacion).slice(0,-9)); let hoy = new Date();
+						hoy = Date.parse(hoy.toLocaleDateString('es-PE')); let img = '';
+						
+						if(data.activo === '0'){
+							color = 0;
+						}else{
+							if(finic === 0){
+								//if(hoy === Date.parse(data.fecha_inicial)) color = 0;
+								if(hoy > Date.parse(data.fecha_inicial) && hoy < Date.parse(data.fecha_final) || hoy === Date.parse(data.fecha_final)) color = 2;
+								else if(hoy > Date.parse(data.fecha_final)) color = 3;
+							}
+							if(finic > 0){
+								if(finic === Date.parse(data.fecha_inicial)) color = 1;
+								else if(finic > Date.parse(data.fecha_inicial) && (finic < Date.parse(data.fecha_final) || finic === Date.parse(data.fecha_final))) color = 2;
+								else if(finic > Date.parse(data.fecha_final)) color = 3;
+							}
+						}
+						
+						switch(color){
+							case 0:
+								img = base_url+'public/images/semaforo/gris.png';
+								break;
+							case 1:
+								img = base_url+'public/images/semaforo/verde.png';
+								break;
+							case 2:
+								img = base_url+'public/images/semaforo/ambar.png';
+								break;
+							case 3:
+								img = base_url+'public/images/semaforo/rojo.png';
+								break;
+						}
+						return '<div class="abs-center"><img src="'+img+'" width="27" /></div>';
+					}
 				}
 			],
 			columnDefs:[
 				{title: 'Acciones',targets: 0},{title:'Correlativo',targets: 1},{title:'Acuerdo',targets: 2},{title:'Responsables',targets: 3},
 				{title:'Inicio(Acuerdo)',targets: 4},{title:'Iniciado',targets: 5},{title:'Fecha Iniciado',targets: 6},{title:'Fin(Acuerdo)',targets: 7},
-				{title:'Finalizado',targets: 8},{title:'Fecha Finalizado',targets: 9},{title:'Estado',targets: 10},
+				{title:'Finalizado',targets: 8},{title:'Fecha Finalizado',targets: 9},{title:'Estado',targets: 10},{title:'Avance',targets: 11},
 			], order: [],
 		});
 		
@@ -295,7 +343,64 @@ $('#tablaAcuerdos').bind('click','a',function(e){
 				}
 			});
 		}
+	}else if($(a).hasClass('editar')){
+		let fecha = '';
+		$('#ecorrelativo').val(data.correlativo);
+		$('#eacuerdo').val(data.acuerdo);
+		$('#eresponsables').val(data.responsables);
+		$('#efinicio').val(data.fecha_inicial);
+		$('#effin').val(data.fecha_final);
+		$('#eidacuerdo').val(data.idacuerdo);
+		
+		if(data.check_inicio === '1'){
+			fecha = new Date(data.fecha_iniciacion);
+			fecha = fecha.toLocaleString('es-PE', { timeZone: 'UTC', year: 'numeric', month: 'numeric', day: 'numeric' });
+			$('#ceini').prop('checked', true), $('#eini').removeClass('d-none'), $('#eini').val(fecha);
+		}
+		if(data.check_final === '1'){
+			fecha = new Date(data.fecha_finalizacion);
+			fecha = fecha.toLocaleString('es-PE', { timeZone: 'UTC', year: 'numeric', month: 'numeric', day: 'numeric' });
+			$('#cefin').prop('checked', true), $('#efin').removeClass('d-none'), $('#efin').val(fecha);
+		}
+		console.log(data);
 	}
+});
+
+$('#ceini').bind('change', function(){
+	if($(this).prop('checked')){
+		$('#eini').removeAttr('readonly'), $('#eini').removeClass('d-none'), $('#eini').val('');
+	}else $('#eini').prop('readonly', true), $('#eini').addClass('d-none'), $('#eini').val('');
+});
+
+$('#cefin').bind('change', function(){
+	if($(this).prop('checked')){
+		$('#efin').removeAttr('readonly'), $('#efin').removeClass('d-none'), $('#efin').val('');
+	}else $('#efin').prop('readonly', true), $('#efin').addClass('d-none'), $('#efin').val('');
+});
+
+$('#modalEdit').on('hidden.bs.modal',function(e){
+	$('#form_edit')[0].reset();
+	$('#form_edit input:checkbox').prop('checked',false);
+	$('#efin').addClass('d-none'), $('#efin').val(''), $('#eini').addClass('d-none'), $('#eini').val('');
+	$('#eini').removeAttr('readonly'), $('#efin').removeAttr('readonly');
+	$('body,html').animate({ scrollTop: 0 }, 'fast');
+	//setTimeout(function () { if(!$('.mesg').css('display') == 'none' || $('.mesg').css('opacity') == 1) $('.mesg').hide('slow'); }, 3000);*/
+});
+
+$('#editAcuerdo').bind('click', function(){
+	let formData = new FormData(document.getElementById('form_edit'));
+	$.ajax({
+		data: new URLSearchParams(formData).toString(),
+		url: base_url + 'acuerdos/editAcuerdo',
+		method: 'POST',
+		dataType: 'JSON',
+		beforeSend: function(){},
+		success: function(data){
+			$('.resp').html(data.msg);
+			if(data.status === 200) tablaAcuerdos.ajax.reload();
+			setTimeout(function(){ $('.resp').html(''); }, 2500);
+		}
+	});
 });
 /*
 function formatoFecha(fecha, formato) {

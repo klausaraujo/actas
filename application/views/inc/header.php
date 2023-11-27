@@ -8,6 +8,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link rel="shortcut icon" href="<?=base_url()?>/public/images/favicon.jpg"/>
 <link rel="icon" href="<?=base_url()?>/public/images/favicon.jpg" type="image/x-icon">
+<link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
 <link rel="stylesheet" href="<?=base_url()?>/public/css/bootstrap.css">
 <link rel="stylesheet" href="<?=base_url()?>/public/datatable/dataTables.bootstrap4.min.css">
 <link rel="stylesheet" href="<?=base_url()?>/public/css/typography.css">
@@ -108,4 +109,31 @@ table.dataTable tr, table.dataTable th, table.dataTable td{ font-size: 0.8rem }
 *::-moz-selection { background: rgba(0,150,210,0.8); color: #fff; text-shadow: none; }
 ::-moz-selection { background: rgba(0,150,210,0.8); color: #fff; text-shadow: none; }
 ::selection { background: rgba(0,150,210,0.8); color: #fff; text-shadow: none; }
+
+
+	label.check{ user-select: none }
+    label.check input[type="checkbox"] { appearance: none }
+    label.check input[type="checkbox"]:after {
+        content: '';
+        display: inline-flex;
+        align-items: center;
+        justify-content: center; 
+        width: 16px;
+        height: 16px;
+        /*line-height: 16px;
+        border: 1px solid grey;
+        border-radius: 2px;*/
+    }
+    label.check input[type="checkbox"]:checked:after {
+        content: '✓';
+        /*background-color: green;*/
+        color: green;
+		font-weight: bold;
+		font-size: 1.2rem
+    }
+	.abs-center {
+	  display: flex;
+	  align-items: center;
+	  justify-content: center;
+	}
 </style>

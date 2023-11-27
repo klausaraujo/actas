@@ -101,6 +101,7 @@ $route['actas/acuerdos'] = 'actas/main/acuerdos';
 $route['actas/listaacuerdos'] = 'actas/main/listaacuerdos';
 $route['acuerdos/registrar'] = 'actas/main/regacuerdos';
 $route['acuerdos/anular'] = 'actas/main/anularacuerdos';
+$route['acuerdos/editAcuerdo'] = 'actas/main/editAcuerdo';
 
 /**/
 $route['404_override'] = '';

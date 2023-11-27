@@ -2,6 +2,7 @@
 		<!-- jQuery first, then Popper.js, then Bootstrap JS -->
 		<script src="<?=base_url()?>public/js/jquery.min.js"></script>
 		<!--<script src="<?=base_url()?>/public/js/jquery-3.5.1.js"></script>-->
+		<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
 		<script src="<?=base_url()?>public/js/popper.min.js"></script>
 		<script src="<?=base_url()?>public/js/bootstrap.min.js"></script>
 		  <!-- Appear JavaScript -->
@@ -72,6 +73,7 @@
 				}
 			}
 			function mayus(e){e.value = e.value.toUpperCase();}
+			$( function(){ $( '.datepicker' ).datepicker( { dateFormat: "dd/mm/yy", minDate: new Date() } ); } );
 		</script>
 		<!-- Rutinas Javascript por cada uno de los segmentos 1 -->
 		<?php if($this->uri->segment(1) === 'usuarios'){ ?>

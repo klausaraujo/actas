@@ -131,15 +131,35 @@ class Main extends CI_Controller
 	{
 		$this->load->model('Actas_model');
 		$idacta = $this->input->post('idacta');
-		$acuerdos = $this->Actas_model->listaAcuerdos(['idacta' => $idacta, 'activo' => 1]);		
+		$acuerdos = $this->Actas_model->listaAcuerdos(['idacta' => $idacta]);		
 		echo json_encode(['data' => $acuerdos]);
 	}
 	public function regacuerdos()
 	{
-		$status = 500; $msg = 'No se pudo Guardar/Actualizar el Acuerdo'; $nro = 0;
+		$status = 500; $msg = 'No se pudo Guardar/Actualizar el Acuerdo'; $nro = 0; $fila = [];
 		$this->load->model('Actas_model');
 		
 		$get = json_decode(file_get_contents('php://input'));
+		
+		/*$i = 0;
+		foreach($get as $row):
+			$ini = date_format(date_create($row->fecha_inicial),'Y-m-d'); $fin = date_format(date_create($row->fecha_final),'Y-m-d');
+			$fila[$i] = array(
+				'idacta' => $row->idacta,
+				'correlativo' => $row->correlativo,
+				'acuerdo' => $row->acuerdo,
+				'responsables' => $row->responsables,
+				'fecha_inicial' => $ini,
+				'fecha_final' => $fin,
+				'fecha_iniciacion' => null,
+				'check_inicio' => 0,
+				'fecha_finalizacion' => null,
+				'check_final' => 0,
+				'activo' => $row->activo,
+			);
+			$i++;
+		endforeach;*/
+		
 		if($this->Actas_model->registrarBatch(['idacta'=>$get[0]->idacta],$get,'acta_acuerdos')){
 			$status = 200;
 			$msg = 'Acuerdo Guardado/Actualizado';
@@ -151,6 +171,35 @@ class Main extends CI_Controller
 			'status' => $status,
 			'data' => $msg,
 			'nro' => $nro
+		);
+		echo json_encode($data);
+	}
+	public function editAcuerdo()
+	{
+		$this->load->model('Actas_model'); $checkinicio = isset($_POST['ceini']) && $_POST['eini'] != ''? 1 : 0;
+		$checkfin = isset($_POST['cefin']) && $_POST['efin'] != ''? 1 : 0; $iniciacion = $checkinicio? date('Y-m-d',strtotime(str_replace('/','-',$_POST['eini']))) : null;
+		$finalizacion = $checkfin? date('Y-m-d',strtotime(str_replace('/','-',$_POST['efin']))) : null;
+		$finicial = date('Y-m-d',strtotime($this->input->post('efinicio'))); $ffinal = date('Y-m-d',strtotime($this->input->post('effin')));
+		$status = 500; $msg = 'No se pudo actualizar el acuerdo';
+		
+		$reg = array(
+			'acuerdo' => $this->input->post('eacuerdo'),
+			'responsables' => $this->input->post('eresponsables'),
+			'fecha_inicial' => $finicial,
+			'fecha_final' => $ffinal,
+			'fecha_iniciacion' => $iniciacion,
+			'check_inicio' => $checkinicio,
+			'fecha_finalizacion' => $finalizacion,
+			'check_final' => $checkfin,
+		);
+		
+		if($this->Actas_model->actualizar($reg,['idacuerdo' => $this->input->post('eidacuerdo')],'acta_acuerdos')){
+			$status = 200; $msg = 'Acuerdo Actualizado';
+		}
+		
+		$data = array(
+			'status' => $status,
+			'msg' => $msg
 		);
 		echo json_encode($data);
 	}
